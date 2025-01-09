@@ -1,22 +1,26 @@
+import type { DrawingsOptions, FontOptions, ResolvedDrawingsOptions, ResolvedExportOptions, ResolvedFontOptions, SlidevConfig, SlidevThemeMeta } from '@slidev/types'
 import { toArray, uniq } from '@antfu/utils'
-import type { DrawingsOptions, FontOptions, ResolvedDrawingsOptions, ResolvedFontOptions, SlidevConfig, SlidevThemeMeta } from '@slidev/types'
 import { parseAspectRatio } from './utils'
 
-export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}) {
-  const themeHightlighter = ['prism', 'shiki'].includes(themeMeta.highlighter || '') ? themeMeta.highlighter as 'prism' | 'shiki' : undefined
-  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '') ? themeMeta.colorSchema as 'light' | 'dark' : undefined
-
-  const defaultConfig: SlidevConfig = {
+export function getDefaultConfig(): SlidevConfig {
+  return {
     theme: 'default',
     title: 'Slidev',
     titleTemplate: '%s - Slidev',
+    addons: [],
     remoteAssets: false,
-    monaco: 'dev',
+    monaco: true,
+    monacoTypesSource: 'local',
+    monacoTypesAdditionalPackages: [],
+    monacoTypesIgnorePackages: [],
+    monacoRunAdditionalDeps: [],
     download: false,
+    export: {} as ResolvedExportOptions,
     info: false,
-    highlighter: themeHightlighter || 'prism',
+    highlighter: 'shiki',
+    twoslash: true,
     lineNumbers: false,
-    colorSchema: themeColorSchema || 'auto',
+    colorSchema: 'auto',
     routerMode: 'history',
     aspectRatio: 16 / 9,
     canvasWidth: 980,
@@ -27,10 +31,36 @@ export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}) 
     favicon: 'https://cdn.jsdelivr.net/gh/slidevjs/slidev/assets/favicon.png',
     drawings: {} as ResolvedDrawingsOptions,
     plantUmlServer: 'https://www.plantuml.com/plantuml',
+    codeCopy: true,
+    author: '',
     record: 'dev',
+    css: 'unocss',
+    presenter: true,
+    browserExporter: 'dev',
+    htmlAttrs: {},
+    transition: null,
+    editor: true,
+    contextMenu: null,
+    wakeLock: true,
+    remote: false,
+    mdc: false,
   }
+}
+
+export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}, filepath?: string, verify = false) {
+  const themeHightlighter = ['prism', 'shiki', 'shikiji'].includes(themeMeta.highlighter || '')
+    ? themeMeta.highlighter as 'shiki'
+    : undefined
+  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '')
+    ? themeMeta.colorSchema as 'light' | 'dark'
+    : undefined
+
+  const defaultConfig = getDefaultConfig()
+
   const config: SlidevConfig = {
     ...defaultConfig,
+    highlighter: themeHightlighter || defaultConfig.highlighter,
+    colorSchema: themeColorSchema || defaultConfig.colorSchema,
     ...themeMeta.defaults,
     ...headmatter.config,
     ...headmatter,
@@ -39,23 +69,59 @@ export function resolveConfig(headmatter: any, themeMeta: SlidevThemeMeta = {}) 
       ...headmatter.config?.fonts,
       ...headmatter?.fonts,
     }),
-    drawings: resolveDrawings(headmatter.drawings),
+    drawings: resolveDrawings(headmatter.drawings, filepath),
+    htmlAttrs: {
+      ...themeMeta.defaults?.htmlAttrs,
+      ...headmatter.config?.htmlAttrs,
+      ...headmatter?.htmlAttrs,
+    },
   }
+
+  // @ts-expect-error compat
+  if (config.highlighter === 'shikiji') {
+    console.warn(`[slidev] "shikiji" is merged back to "shiki", you can safely change it "highlighter: shiki"`)
+    config.highlighter = 'shiki'
+  }
+
+  // @ts-expect-error compat
+  if (config.highlighter === 'prism')
+    throw new Error(`[slidev] "prism" support has been dropped. Please use "highlighter: shiki" instead`)
 
   if (config.colorSchema !== 'dark' && config.colorSchema !== 'light')
     config.colorSchema = 'auto'
   if (themeColorSchema && config.colorSchema === 'auto')
     config.colorSchema = themeColorSchema
+
   config.aspectRatio = parseAspectRatio(config.aspectRatio)
 
-  if (themeColorSchema && config.colorSchema !== themeColorSchema)
-    // eslint-disable-next-line no-console
-    console.warn(`[slidev] Color schema "${config.colorSchema}" does not supported by the theme`)
-  if (themeHightlighter && config.highlighter !== themeHightlighter)
-    // eslint-disable-next-line no-console
-    console.warn(`[slidev] Syntax highlighter "${config.highlighter}" does not supported by the theme`)
+  if (verify)
+    verifyConfig(config, themeMeta)
 
   return config
+}
+
+export function verifyConfig(
+  config: SlidevConfig,
+  themeMeta: SlidevThemeMeta = {},
+  warn = (v: string) => console.warn(`[slidev] ${v}`),
+) {
+  const themeHightlighter = themeMeta.highlighter === 'shiki'
+    ? themeMeta.highlighter as 'shiki'
+    : undefined
+  const themeColorSchema = ['light', 'dark'].includes(themeMeta.colorSchema || '')
+    ? themeMeta.colorSchema as 'light' | 'dark'
+    : undefined
+
+  if (themeColorSchema && config.colorSchema !== themeColorSchema)
+    warn(`Color schema "${config.colorSchema}" does not supported by the theme`)
+
+  if (themeHightlighter && config.highlighter !== themeHightlighter)
+    warn(`Syntax highlighter "${config.highlighter}" does not supported by the theme`)
+
+  if (config.css !== 'unocss') {
+    warn(`Unsupported Atomic CSS engine "${config.css}", fallback to UnoCSS`)
+    config.css = 'unocss'
+  }
 }
 
 export function resolveFonts(fonts: FontOptions = {}): ResolvedFontOptions {
@@ -137,7 +203,7 @@ export function resolveFonts(fonts: FontOptions = {}): ResolvedFontOptions {
   }
 }
 
-function resolveDrawings(options: DrawingsOptions = {}): ResolvedDrawingsOptions {
+function resolveDrawings(options: DrawingsOptions = {}, filepath?: string): ResolvedDrawingsOptions {
   const {
     enabled = true,
     persist = false,
@@ -148,7 +214,7 @@ function resolveDrawings(options: DrawingsOptions = {}): ResolvedDrawingsOptions
   const persistPath = typeof persist === 'string'
     ? persist
     : persist
-      ? '.slidev/drawings'
+      ? `.slidev/drawings${filepath ? `/${filepath.match(/([^\\/]+?)(\.\w+)?$/)?.[1]}` : ''}`
       : false
 
   return {

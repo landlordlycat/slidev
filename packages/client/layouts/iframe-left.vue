@@ -1,13 +1,24 @@
 <script setup lang="ts">
-const props = defineProps<{ class?: string; url: string }>()
+import { computed } from 'vue'
+
+const props = defineProps<{
+  url: string
+  scale?: number
+}>()
+
+const scaleInvertPercent = computed(() => `${(1 / (props.scale || 1)) * 100}%`)
 </script>
 
 <template>
   <div class="grid grid-cols-2 w-full h-full">
-    <div class="h-full">
-      <iframe id="frame" class="w-full h-full" :src="url" />
+    <div relative :style="{ width: scaleInvertPercent, height: scaleInvertPercent }">
+      <iframe
+        id="frame" class="w-full h-full"
+        :src="url"
+        :style="scale ? { transform: `scale(${scale})`, transformOrigin: 'top left' } : {}"
+      />
     </div>
-    <div class="slidev-layout default" :class="props.class">
+    <div class="slidev-layout default" v-bind="$attrs">
       <slot />
     </div>
   </div>

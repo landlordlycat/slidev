@@ -1,8 +1,0 @@
-{
-  "exclude": [
-    "husky",
-    "cypress",
-    "execa",
-    "tsup"
-  ]
-}

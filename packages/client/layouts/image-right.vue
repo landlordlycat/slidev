@@ -9,16 +9,20 @@ const props = defineProps({
   class: {
     type: String,
   },
+  backgroundSize: {
+    type: String,
+    default: 'cover',
+  },
 })
 
-const style = computed(() => handleBackground(props.image))
+const style = computed(() => handleBackground(props.image, false, props.backgroundSize))
 </script>
 
 <template>
-  <div class="grid grid-cols-2 w-full h-full">
+  <div class="grid grid-cols-2 w-full h-full auto-rows-fr">
     <div class="slidev-layout default" :class="props.class">
       <slot />
     </div>
-    <div class="w-full w-full" :style="style" />
+    <div class="w-full h-full" :style="style" />
   </div>
 </template>

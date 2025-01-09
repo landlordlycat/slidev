@@ -2,11 +2,11 @@
 layout: cover
 download: 'https://antfu.me/talks/2021-04-29'
 highlighter: shiki
-# monaco: true
+monaco: true
 info: |
   ## Composable Vue
 
-  Pattens and tips for writing good composable logic in Vue
+  Patterns and tips for writing good composable logic in Vue
 
   [Anthony Fu](https://antfu.me/) at [VueDay 2021](https://2021.vueday.it/)
 
@@ -17,20 +17,19 @@ info: |
 
 # Composable Vue
 
-Pattens and tips for writing good composable logic in Vue
+Patterns and tips for writing good composable logic in Vue
 
 <div class="uppercase text-sm tracking-widest">
 Anthony Fu
 </div>
 
 <div class="abs-bl mx-14 my-12 flex">
-  <img src="https://2020.vueday.it/img/themes/vueday/vueday-logo.png" class="h-8">
+  <img src="https://2020.vueday.it/img/themes/vueday/vueday-logo.png" class="h-8" alt="">
   <div class="ml-3 flex flex-col text-left">
     <div><b>Vue</b>Day</div>
     <div class="text-sm opacity-50">Apr. 29th, 2021</div>
   </div>
 </div>
-
 
 ---
 layout: 'intro'
@@ -44,7 +43,7 @@ Creator of VueUse, i18n Ally and Type Challenges.<br>
 A fanatical full-time open sourceror.<br>
 </div>
 
-<div class="my-10 grid grid-cols-[40px,1fr] w-min gap-y-4">
+<div class="my-10 grid grid-cols-[40px_1fr] w-min gap-y-4">
   <ri-github-line class="opacity-50"/>
   <div><a href="https://github.com/antfu" target="_blank">antfu</a></div>
   <ri-twitter-line class="opacity-50"/>
@@ -53,15 +52,14 @@ A fanatical full-time open sourceror.<br>
   <div><a href="https://antfu.me" target="_blank">antfu.me</a></div>
 </div>
 
-<img src="https://antfu.me/avatar.png" class="rounded-full w-40 abs-tr mt-16 mr-12"/>
-
+<img src="https://antfu.me/avatar.png" class="rounded-full w-40 abs-tr mt-16 mr-12" alt="A comic art image of Anthony Fu"/>
 
 ---
 name: Sponsors
 layout: center
 ---
 
-<img class="h-100 -mt-10" src="https://cdn.jsdelivr.net/gh/antfu/static/sponsors.png" /><br>
+<img class="h-100 -mt-10" src="https://cdn.jsdelivr.net/gh/antfu/static/sponsors.png" alt="A list of the sponsor logos" /><br>
 <div class="text-center text-xs opacity-50 -mt-8 hover:opacity-100">
   <a href="https://github.com/sponsors/antfu" target="_blank">
     Sponsor me at GitHub
@@ -74,15 +72,14 @@ layout: center
 
 # Composable Vue
 
-
 ---
 name: VueUse
 layout: center
 ---
 
-<div class="grid grid-cols-[3fr,2fr] gap-4">
+<div class="grid grid-cols-[3fr_2fr] gap-4">
   <div class="text-center pb-4">
-    <img class="h-50 inline-block" src="https://vueuse.org/favicon.svg">
+    <img class="h-50 inline-block" src="https://vueuse.org/favicon.svg" alt="">
     <div class="opacity-50 mb-2 text-sm">
       Collection of essential Vue Composition Utilities
     </div>
@@ -95,7 +92,7 @@ layout: center
       <a class="!border-none" href="https://github.com/vueuse/vueuse" target="__blank"><img class="mt-2 h-4 inline mx-0.5" alt="GitHub stars" src="https://img.shields.io/github/stars/vueuse/vueuse?style=social"></a>
     </div>
   </div>
-  <div class="border-l border-gray-400 border-opacity-25 !all:leading-12 !all:list-none my-auto">
+  <div class="border-l border-main !all:leading-12 !all:list-none my-auto">
 
   - Works for both Vue 2 and 3
   - Tree-shakeable ESM
@@ -106,7 +103,6 @@ layout: center
   </div>
 </div>
 
-
 ---
 layout: center
 class: text-center
@@ -115,7 +111,6 @@ class: text-center
 # Composition API
 
 a brief go-through
-
 
 ---
 
@@ -175,7 +170,6 @@ bar.prop = 1
 </div>
 </div></div>
 
-
 ---
 
 # Ref Auto Unwrapping <MarkerCore />
@@ -212,6 +206,7 @@ watch(counter, (count) => {
 
 ```ts {monaco}
 import { reactive, ref } from 'vue'
+
 const foo = ref('bar')
 const data = reactive({ foo, id: 10 })
 data.foo // 'bar'
@@ -222,7 +217,6 @@ data.foo // 'bar'
 </v-clicks>
 
 </div>
-
 
 ---
 
@@ -259,7 +253,6 @@ unref(bar) // 'bar'
 
 </div></div>
 
-
 ---
 layout: center
 class: text-center
@@ -269,19 +262,18 @@ class: text-center
 
 of writing composable functions
 
-
 ---
 
 # What's Composable Functions
 
 Sets of reusable logic, separation of concerns.
 
-<div v-click class="grid grid-cols-[1fr,130px]">
+<div v-click class="grid grid-cols-[1fr_130px]">
 
 ```ts
 export function useDark(options: UseDarkOptions = {}) {
   const preferredDark = usePreferredDark() // <--
-  const store = useStorage('vueuse-dark', 'auto') // <--
+  const store = useLocalStorage('vueuse-dark', 'auto') // <--
 
   return computed<boolean>({
     get() {
@@ -308,7 +300,6 @@ export function useDark(options: UseDarkOptions = {}) {
 <VueUse name="useDark"/>
 </div>
 
-
 ---
 
 # Think as "Connections"
@@ -318,14 +309,13 @@ The `setup()` only runs **once** on component initialization, to construct the r
 - Input → Output<sup class="ml-1 opacity-50">Effects</sup>
 - Output reflects to input's changes automatically
 
-<div class="grid grid-cols-[auto,1fr] gap-4">
+<div class="grid grid-cols-[auto_1fr] gap-4">
   <Connections v-click class="mt-4"/>
   <div v-click class="p-4">
     <h3 class="pb-2">SpreadSheet Formula</h3>
-    <img class="h-40" src="https://cdn.wallstreetmojo.com/wp-content/uploads/2019/01/Division-Formula-in-Excel-Example-1-1.png">
+    <img class="h-40" src="https://cdn.wallstreetmojo.com/wp-content/uploads/2019/01/Division-Formula-in-Excel-Example-1-1.png" alt="">
   </div>
 </div>
-
 
 ---
 
@@ -339,12 +329,11 @@ Just the same as authoring JavaScript functions.
 - Keep function small and simple
 - "Do one thing, and do it well"
 
-
 ---
 
 # Passing Refs as Arguments <MarkerPattern />
 
-<div class="grid grid-cols-[160px,1fr,180px] gap-x-4">
+<div class="grid grid-cols-[160px_1fr_180px] gap-x-4">
 
 <div />
 
@@ -357,7 +346,6 @@ Just the same as authoring JavaScript functions.
 <div class="my-auto leading-6 text-base opacity-75">
 Plain function
 </div>
-
 
 ```ts
 function add(a: number, b: number) {
@@ -415,7 +403,6 @@ c.value // 6
 
 </div>
 
-
 ---
 
 # MaybeRef <MarkerTips/>
@@ -429,7 +416,6 @@ type MaybeRef<T> = Ref<T> | T
 <v-click>
 
 In VueUse, we use this helper heavily to support optional reactive arguments
-
 
 ```ts
 export function useTimeAgo(
@@ -453,7 +439,6 @@ export function useTimeAgo(
 ```
 
 </v-click>
-
 
 ---
 
@@ -481,8 +466,8 @@ title.value = 'Hello World'
 ### Binding an Existing Ref
 
 ```ts {monaco}
-import { computed, ref } from 'vue'
 import { useTitle } from '@vueuse/core'
+import { computed, ref } from 'vue'
 
 const name = ref('Hello')
 const title = computed(() => {
@@ -500,7 +485,6 @@ name.value = 'Hi' // Hi - World
 <VueUse name="useTitle"/>
 </div>
 
-
 ---
 
 # `useTitle` <Marker class="text-blue-400">Case</Marker>
@@ -511,8 +495,8 @@ Take a look at `useTitle`'s implementation
 <v-clicks>
 
 ```ts {monaco}
-import { ref, watch } from 'vue'
 import type { MaybeRef } from '@vueuse/core'
+import { ref, watch } from 'vue'
 
 export function useTitle(
   newTitle: MaybeRef<string | null | undefined>,
@@ -530,11 +514,6 @@ export function useTitle(
 
 ```html
 
-
-
-
-
-
 <-- 1. use the user provided ref or create a new one
 
 <-- 2. sync ref changes to the document title
@@ -543,7 +522,6 @@ export function useTitle(
 
 </v-clicks>
 </div>
-
 
 ---
 
@@ -560,7 +538,6 @@ const bar = ref(foo) // Ref<1>
 foo === bar // true
 ```
 
-
 ```ts
 function useFoo(foo: Ref<string> | string) {
   // no need!
@@ -576,7 +553,6 @@ function useFoo(foo: Ref<string> | string) {
 Extremely useful in composable functions that take uncertain argument types.
 
 </v-clicks>
-
 
 ---
 
@@ -600,7 +576,6 @@ function useBala<T>(arg: MaybeRef<T>) {
 ```
 
 </div>
-
 
 ---
 
@@ -638,7 +613,6 @@ mouse.x === x.value // true
 </v-clicks>
 </div>
 
-
 ---
 
 # Async to "Sync" <MarkerTips />
@@ -673,7 +647,6 @@ Establish the "Connections" first, then wait for data to be filled up. The idea 
 
 </div>
 
-
 ---
 
 # `useFetch` <Marker class="text-blue-400">Case</Marker>
@@ -702,7 +675,6 @@ export function useFetch<R>(url: MaybeRef<string>) {
 <div v-click class="abs-b mx-14 my-12">
 <VueUse name="useFetch"/>
 </div>
-
 
 ---
 
@@ -757,7 +729,6 @@ const scope = effectScope(() => {
 stop(scope)
 ```
 
-
 ---
 disabled: true
 ---
@@ -770,6 +741,7 @@ To get DOM element, you can pass a ref to it, and it will be available after com
 
 ```ts {monaco}
 import { defineComponent, onMounted, ref } from 'vue'
+
 export default defineComponent({
   setup() {
     const element = ref<HTMLElement | undefined>()
@@ -791,7 +763,6 @@ export default defineComponent({
 
 </div>
 
-
 ---
 disabled: true
 ---
@@ -805,6 +776,7 @@ Use `watch` instead of `onMounted` to unify the handling for template ref change
 
 ```ts {monaco}
 import { defineComponent, ref, watch } from 'vue'
+
 export default defineComponent({
   setup() {
     const element = ref<HTMLElement | undefined>()
@@ -823,7 +795,6 @@ export default defineComponent({
 
 </v-click>
 </div>
-
 
 ---
 
@@ -846,7 +817,6 @@ export const injectKeyUser: InjectionKey<UserInfo> = Symbol('user')
 ```
 
 </div>
-
 
 ---
 
@@ -890,7 +860,6 @@ export default {
 
 </v-clicks>
 </div>
-
 
 ---
 
@@ -937,14 +906,13 @@ console.log(state.foo) // 2
 
 <h3 v-click class="opacity-100">⚠️ But it's not SSR compatible!</h3>
 
-
 ---
 
 # Shared State (SSR friendly) <MarkerPattern />
 
 Use `provide` and `inject` to share the app-level state
 
-<div class="grid grid-cols-[max-content,1fr] gap-4">
+<div class="grid grid-cols-[max-content_1fr] gap-4">
 
 <v-click>
 
@@ -997,7 +965,6 @@ const state = useMyState()
 </div>
 
 </div>
-
 
 ---
 
@@ -1058,7 +1025,6 @@ export default defineComponent({
 <VueUse name="useVModel"/>
 </div>
 
-
 ---
 disabled: true
 ---
@@ -1090,13 +1056,11 @@ export function usePassiveVModel(props, name) {
 
 </v-click>
 
-
 ---
 layout: center
 ---
 
 # All of them work for both Vue 2 and 3
-
 
 ---
 
@@ -1105,8 +1069,8 @@ layout: center
 Composition API support for Vue 2.<br><carbon-logo-github class="inline-block"/> [vuejs/composition-api](https://github.com/vuejs/composition-api)
 
 ```ts
-import Vue from 'vue'
 import VueCompositionAPI from '@vue/composition-api'
+import Vue from 'vue'
 
 Vue.use(VueCompositionAPI)
 ```
@@ -1114,7 +1078,6 @@ Vue.use(VueCompositionAPI)
 ```ts
 import { reactive, ref } from '@vue/composition-api'
 ```
-
 
 ---
 
@@ -1128,7 +1091,6 @@ import { reactive, ref } from '@vue/composition-api'
 - IE11 support.
 - LTS.
 
-
 ---
 
 # Vue Demi <Marker class="text-teal-400">Lib</Marker>
@@ -1140,8 +1102,7 @@ Creates Universal Library for Vue 2 & 3<br><carbon-logo-github class="inline-blo
 import { defineComponent, reactive, ref } from 'vue-demi'
 ```
 
-<img class="h-50 mx-auto" src="https://cdn.jsdelivr.net/gh/vueuse/vue-demi/assets/banner.png" />
-
+<img class="h-50 mx-auto" src="https://cdn.jsdelivr.net/gh/vueuse/vue-demi/assets/banner.png" alt="" />
 
 ---
 
@@ -1155,7 +1116,6 @@ import { defineComponent, reactive, ref } from 'vue-demi'
 - Async to "sync"
 - Side-effect self clean up
 - Shared state
-
 
 ---
 layout: center

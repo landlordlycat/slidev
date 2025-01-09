@@ -1,14 +1,14 @@
-import {
-  transformMermaid,
-  transformPageCSS,
-  transformPlantUml,
-  transformSlotSugar,
-} from '@slidev/cli/node/plugins/markdown'
-import { describe, expect, it } from 'vitest'
+import { transformCodeWrapper } from 'packages/slidev/node/syntax/transform/code-wrapper'
+import { transformPageCSS } from 'packages/slidev/node/syntax/transform/in-page-css'
+import { transformMermaid } from 'packages/slidev/node/syntax/transform/mermaid'
+import { transformPlantUml } from 'packages/slidev/node/syntax/transform/plant-uml'
+import { transformSlotSugar } from 'packages/slidev/node/syntax/transform/slot-sugar'
+import { transformSnippet } from 'packages/slidev/node/syntax/transform/snippet'
+import { expect, it } from 'vitest'
+import { createTransformContext } from './_tutils'
 
-describe('markdown transform', () => {
-  it('slot-sugar', () => {
-    expect(transformSlotSugar(`
+it('slot-sugar', () => {
+  const ctx = createTransformContext(`
 # Page 
 
 Default Slot
@@ -16,11 +16,17 @@ Default Slot
 Right Slot
 ::left::
 <div>Left Slot</div>
-`)).toMatchSnapshot()
-  })
+`)
 
-  it('slot-sugar with default', () => {
-    expect(transformSlotSugar(`
+  transformCodeWrapper(ctx)
+  ctx.s.commit()
+  transformSlotSugar(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
+})
+
+it('slot-sugar with default', () => {
+  const ctx = createTransformContext(`
 :: right::
 Right Slot
 ::left ::
@@ -28,11 +34,15 @@ Right Slot
 :: default ::
 # Page 
 Default Slot
-`)).toMatchSnapshot()
-  })
+`)
 
-  it('slot-sugar with code', () => {
-    expect(transformSlotSugar(`
+  transformSlotSugar(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
+})
+
+it('slot-sugar with code', () => {
+  const ctx = createTransformContext(`
 # Page 
 
 Default Slot
@@ -45,11 +55,33 @@ Slot Usage
 ::left::
 \`\`\`
 
-`)).toMatchSnapshot()
-  })
+`)
 
-  it('Inline CSS', () => {
-    expect(transformPageCSS(`
+  transformCodeWrapper(ctx)
+  ctx.s.commit()
+  transformSlotSugar(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
+})
+
+it('slot-sugar with symbols in name', () => {
+  const ctx = createTransformContext(`
+# Page 
+
+Default Slot
+::slot::1::
+First Slot
+::slot.2::
+Second Slot
+`)
+
+  transformSlotSugar(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
+})
+
+it('inline CSS', () => {
+  const ctx = createTransformContext(`
 # Page 
 
 <style>
@@ -65,11 +97,17 @@ h1 {
 }
 </style>
 \`\`\`
-`, '01.md')).toMatchSnapshot()
-  })
+`)
 
-  it('Mermaid', () => {
-    expect(transformMermaid(`
+  transformCodeWrapper(ctx)
+  ctx.s.commit()
+  transformPageCSS(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
+})
+
+it('mermaid', () => {
+  const ctx = createTransformContext(`
 # Page 
 
 \`\`\`mermaid
@@ -84,11 +122,15 @@ B[Text] --> C{Decision}
 C -->|One| D[Result 1]
 C -->|Two| E[Result 2]
 \`\`\`
-`)).toMatchSnapshot()
-  })
+`)
 
-  it('PlantUML', () => {
-    expect(transformPlantUml(`
+  transformMermaid(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
+})
+
+it('plantUML', () => {
+  const ctx = createTransformContext(`
 # Page
 
 \`\`\`plantuml
@@ -114,6 +156,24 @@ Alice <- Bob : Hello, too!
 *** <s>Raspyfi</s> => Volumio
 @endmindmap
 \`\`\`
-`, 'https://www.plantuml.com/plantuml')).toMatchSnapshot()
-  })
+`)
+
+  transformPlantUml(ctx)
+
+  expect(ctx.s.toString()).toContain(`<PlantUml :code="'JOzD`)
+
+  // TODO: not so sure on this,
+  // it seems the encode result of `plantuml-encoder` is different across platforms since Node 18
+  // we may need to find a better way to test this
+  // expect(result).toMatchSnapshot()
+})
+
+it('external snippet', () => {
+  const ctx = createTransformContext(`
+<<< @/snippets/snippet.ts#snippet ts {2|3|4}{lines:true}
+`)
+
+  transformSnippet(ctx)
+
+  expect(ctx.s.toString()).toMatchSnapshot()
 })

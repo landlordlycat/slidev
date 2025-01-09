@@ -4,13 +4,13 @@ import { computed } from 'vue'
 import { configs } from '../env'
 import Modal from './Modal.vue'
 
-const emit = defineEmits<{ (name: 'modelValue', v: boolean): void }>()
 const props = defineProps({
   modelValue: {
     default: false,
   },
 })
 
+const emit = defineEmits(['update:modelValue'])
 const value = useVModel(props, 'modelValue', emit)
 const hasInfo = computed(() => typeof configs.info === 'string')
 </script>
@@ -33,7 +33,7 @@ const hasInfo = computed(() => typeof configs.info === 'string')
           <img
             class="w-5 h-5"
             src="../assets/logo.png"
-            alt="Slidev"
+            alt="Slidev logo"
           >
           <div style="color: #2082A6">
             <b>Sli</b>dev

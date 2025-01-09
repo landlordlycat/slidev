@@ -1,54 +1,39 @@
 <script setup lang="ts">
-import { computed, provide } from 'vue'
-import { configs, slideAspect, slideWidth } from '../env'
+import { provideLocal } from '@vueuse/core'
+import { computed } from 'vue'
+import { useNav } from '../composables/useNav'
 import { injectionSlideScale } from '../constants'
-import { rawRoutes } from '../logic/nav'
+import { configs, slideAspect, slideWidth } from '../env'
 import PrintSlide from './PrintSlide.vue'
 
 const props = defineProps<{
   width: number
 }>()
 
+const { slides, printRange } = useNav()
+
 const width = computed(() => props.width)
-const height = computed(() => props.width / slideAspect)
+const height = computed(() => props.width / slideAspect.value)
 
 const screenAspect = computed(() => width.value / height.value)
 
 const scale = computed(() => {
-  if (screenAspect.value < slideAspect)
-    return width.value / slideWidth
-  return (height.value * slideAspect) / slideWidth
+  if (screenAspect.value < slideAspect.value)
+    return width.value / slideWidth.value
+  return (height.value * slideAspect.value) / slideWidth.value
 })
-
-// Remove the "end" slide
-const routes = rawRoutes.slice(0, -1)
 
 const className = computed(() => ({
   'select-none': !configs.selectable,
-  'slidev-code-line-numbers': configs.lineNumbers,
 }))
 
-provide(injectionSlideScale, scale)
+provideLocal(injectionSlideScale, scale)
 </script>
 
 <template>
   <div id="print-container" :class="className">
     <div id="print-content">
-      <PrintSlide v-for="route of routes" :key="route.path" :route="route" />
+      <PrintSlide v-for="no of printRange" :key="no" :route="slides[no - 1]" />
     </div>
-    <slot name="controls" />
   </div>
 </template>
-
-<style lang="postcss">
-#print-content {
-  @apply bg-main;
-}
-
-.slide-container {
-  @apply relative;
-  position: relative;
-  overflow: hidden;
-  page-break-before: always;
-}
-</style>

@@ -1,5 +1,5 @@
 <!--
-[Expiremental]
+[Experimental]
 
 Think this component as the TextBox you that will see
 in PowerPoint or Keynote. It will automatically resize
@@ -18,9 +18,6 @@ or
 import { useElementSize, useVModel } from '@vueuse/core'
 import { computed, ref, watch } from 'vue'
 
-const emit = defineEmits<{
-  (e: any): void
-}>()
 const props = defineProps({
   modelValue: {
     default: '',
@@ -33,6 +30,9 @@ const props = defineProps({
   },
 })
 
+const emit = defineEmits<{
+  (e: any): void
+}>()
 const container = ref<HTMLDivElement>()
 const inner = ref<HTMLDivElement>()
 const size = ref(100)
@@ -45,11 +45,11 @@ const innerSize = useElementSize(inner)
 const wrapLen = ref(0)
 const wrap = ref('nowrap')
 
-watch([container, value, containerSize.width, innerSize.width], async() => {
+watch([container, value, containerSize.width, innerSize.width], async () => {
   if (!container.value || innerSize.width.value <= 0)
     return
   const ratio = containerSize.width.value / innerSize.width.value
-  if (isNaN(ratio) || ratio <= 0)
+  if (Number.isNaN(ratio) || ratio <= 0)
     return
   let newSize = size.value * (containerSize.width.value / innerSize.width.value)
   if (newSize < props.min) {

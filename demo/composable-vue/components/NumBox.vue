@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { useVModel } from '@vueuse/core'
 
-const emit = defineEmits<{
-  (e: any): void
-}>()
 const props = defineProps<{
   value: number
   label?: string
@@ -11,16 +8,19 @@ const props = defineProps<{
   controls?: boolean
 }>()
 
+const emit = defineEmits<{
+  (e: any): void
+}>()
 const num = useVModel(props, 'value', emit)
 </script>
 
 <template>
   <div
     class="w-16 h-16 rounded-xl text-white overflow-hidden"
-    style="background-image: radial-gradient(farthest-corner at 0 0, var(--tw-gradient-from) 30%, var(--tw-gradient-to))"
+    style="background-image: radial-gradient(farthest-corner at 0 0, var(--un-gradient-from) 30%, var(--un-gradient-to))"
   >
     <div
-      style="background-image: radial-gradient(farthest-corner at 0 0, var(--tw-gradient-from) 30%, var(--tw-gradient-to))"
+      style="background-image: radial-gradient(farthest-corner at 0 0, var(--un-gradient-from) 30%, var(--un-gradient-to))"
       class="absolute w-full h-full from-orange-400 to-red-400 opacity-0 transition duration-400 ease-in pointer-events-none"
       :class="active ? '!opacity-100 !duration-10' : ''"
     />
