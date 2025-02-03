@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { useDraggable, useEventListener, useStorage } from '@vueuse/core'
+import { useDraggable, useEventListener, useLocalStorage } from '@vueuse/core'
 import { computed, onMounted, ref, watchEffect } from 'vue'
-import { currentCamera } from '../state'
 import { recorder } from '../logic/recording'
+import { currentCamera } from '../state'
 
-const size = useStorage('slidev-webcam-size', Math.round(Math.min(window.innerHeight, (window.innerWidth) / 8)))
-const position = useStorage('slidev-webcam-pos', {
+const size = useLocalStorage('slidev-webcam-size', Math.round(Math.min(window.innerHeight, (window.innerWidth) / 8)))
+const position = useLocalStorage('slidev-webcam-pos', {
   x: window.innerWidth - size.value - 30,
   y: window.innerHeight - size.value - 30,
-})
+}, { deep: true })
 
 const frame = ref<HTMLDivElement | undefined>()
 const handler = ref<HTMLDivElement | undefined>()
@@ -16,7 +16,13 @@ const video = ref<HTMLVideoElement | undefined>()
 
 const { streamCamera, showAvatar } = recorder
 
-const { style: containerStyle } = useDraggable(frame, { initialValue: position })
+const { style: containerStyle } = useDraggable(frame, {
+  initialValue: position,
+  onMove({ x, y }) {
+    position.value.x = x
+    position.value.y = y
+  },
+})
 const { isDragging: handlerDown } = useDraggable(handler, {
   onMove({ x, y }) {
     size.value = Math.max(10, Math.min(x - position.value.x, y - position.value.y) / 0.8536)
@@ -57,7 +63,7 @@ onMounted(fixPosition)
 <template>
   <div
     v-if="streamCamera && showAvatar && currentCamera !== 'none'"
-    class="fixed z-10"
+    class="fixed z-camera"
     :style="containerStyle"
   >
     <div
@@ -77,7 +83,7 @@ onMounted(fixPosition)
 
     <div
       ref="handler"
-      class="absolute bottom-0 right-0 rounded-full bg-main shadow opacity-0 shadow z-30 hover:opacity-100 dark:(border border-true-gray-700)"
+      class="absolute bottom-0 right-0 rounded-full bg-main shadow opacity-0 shadow z-dragging hover:opacity-100 dark:border dark:border-true-gray-700"
       :style="handleStyle"
       :class="handlerDown ? '!opacity-100' : ''"
     />

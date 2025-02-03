@@ -1,36 +1,44 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "baseUrl": ".",
-    "target": "es2016",
+    "target": "es2022",
+    "jsx": "preserve",
     "lib": ["DOM", "ESNext"],
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "noUnusedLocals": true,
+    "baseUrl": ".",
+    "module": "ESNext",
     "moduleResolution": "node",
+    "paths": {
+      "@slidev/client": ["./packages/client/index.ts"],
+      "@slidev/client/*": ["./packages/client/*"],
+      "@slidev/types": ["./packages/types/src/index.ts"],
+      "@slidev/parser/fs": ["./packages/parser/src/fs.ts"],
+      "@slidev/parser/core": ["./packages/parser/src/core.ts"],
+      "@slidev/parser/utils": ["./packages/parser/src/utils.ts"],
+      "@slidev/parser": ["./packages/parser/src/index.ts"]
+    },
     "resolveJsonModule": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
     "types": [
+      "vite",
       "vite/client",
       "node",
       "vite-plugin-vue-server-ref/module"
     ],
-    "paths": {
-      "@slidev/client/*": ["./packages/client/*"],
-      "@slidev/types": ["./packages/types/src/index.ts"],
-      "@slidev/parser": ["./packages/parser/src/index.ts"],
-      "@slidev/parser/fs": ["./packages/parser/src/fs.ts"],
-    },
-    "jsx": "preserve"
+    "strict": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true
   },
   "include": [
     "./*.ts",
-    "./docs/.vitepress/**/*.ts",
-    "./docs/.vitepress/**/*.vue",
+    "./docs/**/*.ts",
+    "./docs/**/*.vue",
     "./packages/**/*.ts",
-    "./packages/**/*.vue"
+    "./packages/**/*.vue",
+    "./demo/**/*.ts",
+    "./demo/**/*.vue",
+    "./test/**/*.ts"
   ],
-  "exclude": ["**/dist/**", "node_modules"]
+  "exclude": ["**/dist/**", "**/node_modules/**"]
 }

@@ -55,7 +55,6 @@ Current Page: {{$slidev.nav.currentPage}}
 
 </v-clicks>
 
-
 <v-clicks>
 
 1. C
@@ -112,4 +111,69 @@ Left
   <div v-click-hide>B</div>
   <div v-click>C</div>
   <div v-click-hide>D</div>
+</div>
+
+---
+
+# Page 11
+
+<div class="cy-depth">
+<v-clicks depth="3">
+
+- A
+  - B
+    - C
+    - D
+  - E
+  - F
+    - G
+    - H
+- I
+
+</v-clicks>
+
+<v-clicks>
+
+- J
+- K
+- L
+
+</v-clicks>
+</div>
+
+---
+
+# Page 12
+
+<v-clicks>
+  <ul><li>A</li><li>B</li></ul>
+</v-clicks>
+
+<wrap-in-clicks>
+  <ul><li>A</li><li>B</li></ul>
+</wrap-in-clicks>
+
+<wrap-in-clicks>
+
+- A
+- B
+
+</wrap-in-clicks>
+
+---
+
+# Page 13
+
+<div class="cy-wrapdecorate">
+<wrap-in-clicks-decorate>
+  <li>E</li>
+  <li>F</li>
+</wrap-in-clicks-decorate>
+
+(the next is kept for a future patch but not animating the nesting)
+
+<wrap-in-component-in-clicks>
+  <li>step i</li>
+  <li>step j</li>
+</wrap-in-component-in-clicks>
 </div>

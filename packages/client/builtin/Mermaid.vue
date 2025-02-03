@@ -13,19 +13,45 @@ pie
 -->
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, ref, watch, watchEffect } from 'vue'
+import { getCurrentInstance, ref, watch, watchEffect } from 'vue'
+import ShadowRoot from '../internals/ShadowRoot.vue'
+import { isDark } from '../logic/dark'
 import { renderMermaid } from '../modules/mermaid'
 
 const props = defineProps<{
-  code: string
+  codeLz: string
   scale?: number
   theme?: string
 }>()
 
 const vm = getCurrentInstance()
-const el = ref<HTMLDivElement>()
-const svgObj = computed(() => renderMermaid(props.code || '', Object.assign({ theme: props.theme }, vm!.attrs)))
-const html = computed(() => svgObj.value)
+const el = ref<ShadowRoot>()
+const error = ref<string | null>(null)
+const html = ref('')
+
+watchEffect(async (onCleanup) => {
+  let disposed = false
+  onCleanup(() => {
+    disposed = true
+  })
+  error.value = null
+  try {
+    const svg = await renderMermaid(
+      props.codeLz || '',
+      {
+        theme: props.theme || (isDark.value ? 'dark' : undefined),
+        ...vm!.attrs,
+      },
+    )
+    if (!disposed)
+      html.value = svg
+  }
+  catch (e) {
+    error.value = `${e}`
+    console.warn(e)
+  }
+})
+
 const actualHeight = ref<number>()
 
 watch(html, () => {
@@ -35,8 +61,8 @@ watch(html, () => {
 watchEffect(() => {
   const svgEl = el.value?.children?.[0] as SVGElement | undefined
   if (svgEl && svgEl.hasAttribute('viewBox') && actualHeight.value == null) {
-    const v = parseFloat(svgEl.getAttribute('viewBox')?.split(' ')[3] || '')
-    actualHeight.value = isNaN(v) ? undefined : v
+    const v = Number.parseFloat(svgEl.getAttribute('viewBox')?.split(' ')[3] || '')
+    actualHeight.value = Number.isNaN(v) ? undefined : v
   }
 }, { flush: 'post' })
 
@@ -51,5 +77,6 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div ref="el" class="mermaid" v-html="html" />
+  <pre v-if="error" border="1 red rounded" class="pa-3 text-wrap">{{ error }}</pre>
+  <ShadowRoot v-else class="mermaid" :inner-html="html" @shadow="el = $event" />
 </template>

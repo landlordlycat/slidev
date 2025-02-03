@@ -1,8 +1,12 @@
 {
+  "type": "module",
   "keywords": [
     "slidev-theme",
     "slidev"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "slidev build example.md",
     "dev": "slidev example.md --open",
@@ -10,28 +14,19 @@
     "screenshot": "slidev export example.md --format png"
   },
   "dependencies": {
-    "@slidev/types": "^0.30.3",
-    "codemirror-theme-vars": "^0.1.1",
-    "prism-theme-vars": "^0.2.2",
-    "theme-vitesse": "^0.4.4"
+    "@slidev/types": "^51.1.0"
   },
   "devDependencies": {
-    "@slidev/cli": "^0.30.3"
+    "@slidev/cli": "^51.1.0"
   },
-  "engines": {
-    "node": ">=14.0.0",
-    "slidev": ">=0.19.3"
-  },
-  "//": "Learn more: https://sli.dev/themes/write-a-theme.html",
+  "//": "Learn more: https://sli.dev/guide/write-theme.html",
   "slidev": {
     "colorSchema": "both",
-    "highlighter": "all",
     "defaults": {
       "fonts": {
         "sans": "Nunito Sans",
         "mono": "Fira Code"
-      },
-      "hightlighter": "prism"
+      }
     }
   }
 }

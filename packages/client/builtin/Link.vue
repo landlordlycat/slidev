@@ -8,19 +8,21 @@ Usage:
 <Link :to="5" title="Go to slide 5" />
 -->
 <script setup lang="ts">
-import { isPrintMode } from '../logic/nav'
+import { useNav } from '../composables/useNav'
 
 defineProps<{
   to: number | string
   title?: string
 }>()
+
+const { isPrintMode } = useNav()
 </script>
 
 <template>
-  <RouterLink v-if="!isPrintMode && title" :to="to" @click="$event.target.blur()" v-html="title" />
-  <RouterLink v-else-if="!isPrintMode && !title" :to="to" @click="$event.target.blur()">
+  <RouterLink v-if="!isPrintMode && title" :to="String(to)" @click="$event.target.blur()" v-html="title" />
+  <RouterLink v-else-if="!isPrintMode && !title" :to="String(to)" @click="$event.target.blur()">
     <slot />
   </RouterLink>
-  <a v-else-if="isPrintMode && title" :href="'#' + to" v-html="title" />
-  <a v-else :href="'#' + to"><slot /></a>
+  <a v-else-if="isPrintMode && title" :href="`#${to}`" v-html="title" />
+  <a v-else :href="`#${to}`"><slot /></a>
 </template>
